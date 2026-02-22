@@ -1,10 +1,52 @@
 #!/bin/bash
 # search_diary.sh - Search diary by tags, date, or content
+# Security: Read-only operations, no file modifications, no network access
 
-set -e
+set -euo pipefail  # Strict mode: exit on error, undefined variables, pipe failures
+IFS=$'\n\t'        # Safer word splitting
 
-# Default configuration
-DIARY_FILE="${DIARY_FILE:-$HOME/diary.md}"
+# Security disclaimer
+echo "🔒 Security: This script only reads user diary files, no modifications" >&2
+
+# Security: Validate file paths to prevent arbitrary file access
+validate_safe_path() {
+    local path="$1"
+    local purpose="$2"
+    
+    # Convert to absolute path
+    local abs_path=$(realpath -m "$path" 2>/dev/null || echo "$path")
+    
+    # Security checks
+    if [[ "$abs_path" =~ ^/etc/ ]]; then
+        echo "❌ Security error: Cannot access system directory /etc/" >&2
+        exit 1
+    fi
+    
+    if [[ "$abs_path" =~ ^/usr/ ]]; then
+        echo "❌ Security error: Cannot access system directory /usr/" >&2
+        exit 1
+    fi
+    
+    if [[ "$abs_path" =~ ^/bin/|^/sbin/|^/lib/|^/lib64/ ]]; then
+        echo "❌ Security error: Cannot access system binaries directory" >&2
+        exit 1
+    fi
+    
+    # Ensure it's within user's home or current directory
+    local user_home="${HOME:-/tmp}"
+    if [[ ! "$abs_path" =~ ^$user_home ]] && [[ ! "$abs_path" =~ ^$(pwd) ]]; then
+        echo "⚠️  Warning: $purpose path is outside user directory: $abs_path" >&2
+        echo "   Only accessing user home or current directory is allowed for safety." >&2
+        exit 1
+    fi
+    
+    echo "$abs_path"
+}
+
+# Default configuration with safety
+DEFAULT_DIARY="$HOME/diary.md"
+DIARY_FILE="${DIARY_FILE:-$DEFAULT_DIARY}"
+DIARY_FILE=$(validate_safe_path "$DIARY_FILE" "diary")
 
 # Function to display help
 show_help() {

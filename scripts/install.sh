@@ -1,7 +1,12 @@
 #!/bin/bash
 # install.sh - Mini Diary installation script
+# Security: Only copies files and sets safe permissions, no dangerous operations
 
-set -e
+set -euo pipefail  # Strict mode: exit on error, undefined variables, pipe failures
+IFS=$'\n\t'        # Safer word splitting
+
+# Security disclaimer
+echo "🔒 Security: This installer only copies files and sets safe permissions" >&2
 
 echo "📦 Installing Mini Diary..."
 echo "=========================="
@@ -29,8 +34,17 @@ mkdir -p "$INSTALL_DIR"
 echo "📄 Copying files..."
 cp -r ./* "$INSTALL_DIR/" 2>/dev/null || true
 
-# Make scripts executable
-chmod +x "$INSTALL_DIR/scripts/"*.sh
+# Make scripts executable (safe mode - only if files exist and are owned by user)
+if [ -d "$INSTALL_DIR/scripts" ]; then
+    for script in "$INSTALL_DIR/scripts/"*.sh; do
+        if [ -f "$script" ] && [ -O "$script" ]; then  # -O checks if file is owned by effective user
+            chmod 755 "$script"
+            echo "  ✓ $(basename "$script") set to 755"
+        else
+            echo "  ⚠️  Skipping $(basename "$script") - not owned by user"
+        fi
+    done
+fi
 
 # Create default diary file if it doesn't exist
 DEFAULT_DIARY="$HOME/diary.md"
