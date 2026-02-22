@@ -4,7 +4,7 @@ description: AI-powered minimal diary with smart auto-tagging and optional cloud
 allowed-tools: Bash(mini-diary:*)
 ---
 
-# Mini Diary Skill
+# 📓 Mini Diary Skill
 
 Your AI-powered mini diary. Small footprint, smart features.
 
@@ -31,6 +31,11 @@ clawhub install mini-diary
 ```bash
 # Add a note (auto-tagging happens automatically)
 mini-diary add "Met with client about P1S delivery"
+
+# Add a todo item (use [ ] for pending, [x] for completed)
+# The todo will be added to the current day's todo section
+echo "- [ ] Follow up with supplier" >> ~/diary.md
+echo "- [x] Submit monthly report" >> ~/diary.md
 
 # Search by tag
 mini-diary search --tag "📦"
@@ -67,6 +72,45 @@ Mini Diary uses a simple Markdown format:
 
 - [ ] Follow up with supplier
 - [x] Update inventory spreadsheet
+```
+
+## ✅ Managing Todos
+
+### Adding Todos
+Since todos are simple Markdown task lists, you can add them directly:
+
+```bash
+# Add a pending todo
+echo "- [ ] Call client for follow-up" >> ~/diary.md
+
+# Add a completed todo  
+echo "- [x] Submit weekly report" >> ~/diary.md
+
+# Add multiple todos
+cat >> ~/diary.md << 'EOF'
+- [ ] Order more filament
+- [x] Backup server data
+- [ ] Schedule team meeting
+EOF
+```
+
+### Todo Best Practices
+1. **Start with date**: Ensure you're adding to the correct day's section
+2. **Use clear descriptions**: "Call John re: P1S delivery" not just "Call John"
+3. **Update status**: Change `[ ]` to `[x]` when completed
+4. **Review daily**: Check todos at start/end of each day
+
+### Finding Todos
+```bash
+# Search for pending todos
+grep "\[ \]" ~/diary.md
+
+# Search for completed todos
+grep "\[x\]" ~/diary.md
+
+# Count todos by status
+grep -c "\[ \]" ~/diary.md  # Pending count
+grep -c "\[x\]" ~/diary.md  # Completed count
 ```
 
 ## 🏷️ Auto-Tagging System
