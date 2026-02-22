@@ -1,8 +1,6 @@
-# Mini Diary
+# 📓 Mini Diary
 
-![Mini Diary Banner](https://via.placeholder.com/800x200/4A90E2/FFFFFF?text=Mini+Diary+-+AI-powered+minimal+journaling)
-
-Your AI-powered mini diary. Small footprint, smart features.
+AI-powered minimal diary. Small footprint, smart features.
 
 ## ✨ Features
 
