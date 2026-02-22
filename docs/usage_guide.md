@@ -51,6 +51,33 @@ mini-diary add "Ordered Bambu PLA and submitted invoice"
 # "submitted invoice" → 💰
 ```
 
+### Manage Todos
+```bash
+# Add pending todo (direct file editing)
+echo "- [ ] Call supplier about PLA stock" >> ~/diary.md
+
+# Add completed todo
+echo "- [x] Submit monthly report" >> ~/diary.md
+
+# Add multiple todos
+cat >> ~/diary.md << 'EOF'
+- [ ] Schedule client training
+- [x] Update software licenses
+- [ ] Order office supplies
+EOF
+
+# Search todos
+grep "\[ \]" ~/diary.md      # Pending todos
+grep "\[x\]" ~/diary.md      # Completed todos
+
+# Todo statistics
+pending=$(grep -c "\[ \]" ~/diary.md)
+completed=$(grep -c "\[x\]" ~/diary.md)
+total=$((pending + completed))
+completion_rate=$((completed * 100 / total))
+echo "Completion: $completion_rate% ($completed/$total)"
+```
+
 ### Search Diary
 ```bash
 # Search by tag
